@@ -1,13 +1,14 @@
 const display = document.getElementById("display");
 const buttons = document.querySelectorAll("button");
+const voiceToggle = document.getElementById("voiceToggle");
 
 let currentInput = "";
 let resultDisplayed = false;
 
-// Fungsi untuk membacakan teks dengan screen reader
 function speak(text) {
+  if (!voiceToggle.checked) return;
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "id-ID"; // Bisa diganti ke 'en-US' jika ingin bahasa Inggris
+  utterance.lang = "id-ID";
   speechSynthesis.speak(utterance);
 }
 
@@ -23,15 +24,24 @@ buttons.forEach((button) => {
         break;
 
       case "back":
+        const deletedChar = currentInput.slice(-1);
         currentInput = currentInput.slice(0, -1);
         display.value = currentInput;
-        speak("Hapus satu karakter");
+
+        let spokenChar = deletedChar;
+        if (deletedChar === "+") spokenChar = "tambah";
+        else if (deletedChar === "-") spokenChar = "kurang";
+        else if (deletedChar === "*") spokenChar = "kali";
+        else if (deletedChar === "/") spokenChar = "bagi";
+        else if (deletedChar === ".") spokenChar = "titik";
+
+        if (spokenChar) speak(`${spokenChar} dihapus`);
         break;
 
       case "=":
         try {
           const result = eval(currentInput);
-          display.value = result;
+          display.value = result === 0 ? "" : result;
           currentInput = result.toString();
           resultDisplayed = true;
           speak(`Hasilnya adalah ${result}`);
@@ -43,7 +53,6 @@ buttons.forEach((button) => {
         break;
 
       default:
-        // Jika hasil sudah ditampilkan dan user mulai input baru
         if (resultDisplayed && /[0-9.]/.test(value)) {
           currentInput = value;
           resultDisplayed = false;
@@ -53,7 +62,6 @@ buttons.forEach((button) => {
 
         display.value = currentInput;
 
-        // Bacakan input yang ditekan
         let spokenValue = value;
         if (value === "+") spokenValue = "tambah";
         else if (value === "-") spokenValue = "kurang";

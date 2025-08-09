@@ -1,96 +1,48 @@
-/* Reset dasar */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  font-family: sans-serif;
+  background: #f0f0f0;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
-/* Container kalkulator */
 .calculator {
-  background: #ffffff;
+  background: white;
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  width: 320px;
-  max-width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Tampilan layar */
 #display {
   width: 100%;
-  height: 60px;
-  font-size: 2rem;
-  text-align: right;
+  font-size: 2em;
   padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #f7f9fc;
-  margin-bottom: 20px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+  text-align: right;
 }
 
-/* Grid tombol */
+.toggle-container {
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
 .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
-/* Gaya tombol umum */
 button {
-  padding: 18px;
-  font-size: 1.2rem;
-  border: none;
-  border-radius: 10px;
-  background: #e0e7ff;
-  color: #333;
+  padding: 15px;
+  font-size: 1.2em;
   cursor: pointer;
-  transition: background 0.2s ease;
+  border: none;
+  background: #eee;
+  border-radius: 5px;
+  transition: background 0.2s;
 }
 
 button:hover {
-  background: #c7d2fe;
-}
-
-/* Tombol operator */
-.operator {
-  background: #fcd34d;
-}
-
-.operator:hover {
-  background: #fbbf24;
-}
-
-/* Tombol hasil */
-.equal {
-  background: #34d399;
-  color: white;
-}
-
-.equal:hover {
-  background: #10b981;
-}
-
-/* Tombol nol lebar penuh */
-.zero {
-  grid-column: span 2;
-}
-
-/* Tombol backspace */
-.backspace {
-  background: #f87171;
-  color: white;
-}
-
-.backspace:hover {
-  background: #ef4444;
+  background: #ddd;
 }
