@@ -41,7 +41,7 @@ buttons.forEach((button) => {
       case "=":
         try {
           const result = eval(currentInput);
-          display.value = result === 0 ? "" : result;
+          display.value = result;
           currentInput = result.toString();
           resultDisplayed = true;
           speak(`Hasilnya adalah ${result}`);
@@ -53,7 +53,13 @@ buttons.forEach((button) => {
         break;
 
       default:
-        if (resultDisplayed && /[0-9.]/.test(value)) {
+        // Jika hasil sudah ditampilkan dan user menekan operator
+        if (resultDisplayed && /[+\-*/]/.test(value)) {
+          currentInput = display.value + value;
+          resultDisplayed = false;
+        }
+        // Jika hasil sudah ditampilkan dan user menekan angka/desimal
+        else if (resultDisplayed && /[0-9.]/.test(value)) {
           currentInput = value;
           resultDisplayed = false;
         } else {
