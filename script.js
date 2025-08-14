@@ -1,81 +1,74 @@
-const display = document.getElementById("display");
+const display = document.querySelector(".display");
 const buttons = document.querySelectorAll("button");
-const voiceToggle = document.getElementById("voiceToggle");
+const voiceToggle = document.getElementById("voice-toggle");
 
-let currentInput = "";
-let resultDisplayed = false;
+// Pastikan daftar suara sudah tersedia
+let availableVoices = [];
+speechSynthesis.onvoiceschanged = () => {
+  availableVoices = speechSynthesis.getVoices();
+};
 
+// Fungsi untuk bicara
 function speak(text) {
   if (!voiceToggle.checked) return;
+
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "id-ID";
+  const userLang = navigator.language || "en-US";
+  utterance.lang = userLang;
+
+  const matchedVoice = availableVoices.find((v) => v.lang === userLang);
+  if (matchedVoice) utterance.voice = matchedVoice;
+
   speechSynthesis.speak(utterance);
 }
 
+// Mapping operator sesuai bahasa
+function getSpokenOperator(value) {
+  const lang = navigator.language;
+  const map = {
+    id: { "+": "tambah", "-": "kurang", "*": "kali", "/": "bagi" },
+    en: { "+": "plus", "-": "minus", "*": "times", "/": "divided by" },
+  };
+  const key = lang.startsWith("id") ? "id" : "en";
+  return map[key][value] || value;
+}
+
+// Event listener untuk tombol
 buttons.forEach((button) => {
   button.addEventListener("click", () => {
-    const value = button.getAttribute("data-value");
+    const value = button.textContent;
 
     switch (value) {
-      case "c":
-        currentInput = "";
-        display.value = "";
-        speak("Dihapus semua");
-        break;
-
-      case "back":
-        const deletedChar = currentInput.slice(-1);
-        currentInput = currentInput.slice(0, -1);
-        display.value = currentInput;
-
-        let spokenChar = deletedChar;
-        if (deletedChar === "+") spokenChar = "tambah";
-        else if (deletedChar === "-") spokenChar = "kurang";
-        else if (deletedChar === "*") spokenChar = "kali";
-        else if (deletedChar === "/") spokenChar = "bagi";
-        else if (deletedChar === ".") spokenChar = "titik";
-
-        if (spokenChar) speak(`${spokenChar} dihapus`);
+      case "C":
+        display.textContent = "";
         break;
 
       case "=":
         try {
-          const result = eval(currentInput);
-          display.value = result;
-          currentInput = result.toString();
-          resultDisplayed = true;
-          speak(`Hasilnya adalah ${result}`);
-        } catch (error) {
-          display.value = "Error";
-          currentInput = "";
+          const result = eval(display.textContent);
+          display.textContent = result;
+          speak(`${result}`); // Tanpa 'Hasilnya adalah'
+        } catch {
+          display.textContent = "Error";
           speak("Terjadi kesalahan");
         }
         break;
 
+      case "+":
+      case "-":
+      case "*":
+      case "/":
+        display.textContent += value;
+        speak(getSpokenOperator(value));
+        break;
+
+      case "←":
+        display.textContent = display.textContent.slice(0, -1);
+        break;
+
       default:
-        // Jika hasil sudah ditampilkan dan user menekan operator
-        if (resultDisplayed && /[+\-*/]/.test(value)) {
-          currentInput = display.value + value;
-          resultDisplayed = false;
-        }
-        // Jika hasil sudah ditampilkan dan user menekan angka/desimal
-        else if (resultDisplayed && /[0-9.]/.test(value)) {
-          currentInput = value;
-          resultDisplayed = false;
-        } else {
-          currentInput += value;
-        }
-
-        display.value = currentInput;
-
-        let spokenValue = value;
-        if (value === "+") spokenValue = "tambah";
-        else if (value === "-") spokenValue = "kurang";
-        else if (value === "*") spokenValue = "kali";
-        else if (value === "/") spokenValue = "bagi";
-        else if (value === ".") spokenValue = "titik";
-
-        speak(spokenValue);
+        display.textContent += value;
+        speak(value);
         break;
     }
   });
